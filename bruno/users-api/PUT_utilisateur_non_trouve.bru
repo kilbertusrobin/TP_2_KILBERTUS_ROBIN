@@ -1,0 +1,17 @@
+meta {
+  name: PUT utilisateur non trouvé (404)
+  type: http
+  seq: 7
+}
+
+put {
+  url: http://localhost:3001/api/users/999
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "name": "Inconnu"
+  }
+}

@@ -1,0 +1,17 @@
+meta {
+  name: PUT email déjà utilisé (409)
+  type: http
+  seq: 12
+}
+
+put {
+  url: http://localhost:3001/api/users/2
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "email": "alice@example.com"
+  }
+}

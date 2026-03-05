@@ -1,0 +1,18 @@
+meta {
+  name: PUT mettre à jour un utilisateur
+  type: http
+  seq: 6
+}
+
+put {
+  url: http://localhost:3001/api/users/1
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "name": "Alice Martin-Dupont",
+    "role": "user"
+  }
+}
