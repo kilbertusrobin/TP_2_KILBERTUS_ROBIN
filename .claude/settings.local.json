@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install:*)",
+      "Bash(\"C:\\\\Users\\\\rbxfa\\\\OneDrive\\\\Desktop\\\\fullstack_tp2\\\\.gitignore\":*)",
+      "Bash(node:*)",
+      "Bash(netstat:*)",
+      "Bash(rm:*)"
+    ]
+  }
+}

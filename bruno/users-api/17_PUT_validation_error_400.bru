@@ -1,0 +1,22 @@
+meta {
+  name: 17 - PUT role invalide → ValidationError (400)
+  type: http
+  seq: 17
+}
+
+put {
+  url: {{baseUrl}}/api/users/{{userId}}
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "role": "superadmin"
+  }
+}
+
+assert {
+  res.status: eq 400
+  res.body.success: eq false
+}

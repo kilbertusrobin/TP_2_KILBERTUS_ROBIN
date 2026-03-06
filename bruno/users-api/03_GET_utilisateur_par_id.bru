@@ -1,0 +1,17 @@
+meta {
+  name: 03 - GET utilisateur par _id
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{baseUrl}}/api/users/{{newUserId}}
+  body: none
+  auth: none
+}
+
+assert {
+  res.status: eq 200
+  res.body.success: eq true
+  res.body.data.name: eq David Bernard
+}

@@ -1,0 +1,17 @@
+meta {
+  name: 09 - GET id invalide (400)
+  type: http
+  seq: 9
+}
+
+get {
+  url: {{baseUrl}}/api/users/123
+  body: none
+  auth: none
+}
+
+assert {
+  res.status: eq 400
+  res.body.success: eq false
+  res.body.message: eq ID invalide
+}

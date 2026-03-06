@@ -1,49 +1,94 @@
-const UserModel = require("../models/userModel");
+const mongoose = require("mongoose");
+const User = require("../models/userModel");
 
-function getAllUsers(req, res) {
-  const result = UserModel.getAll(req.query.role);
-  res.status(200).json({ success: true, count: result.length, data: result });
+// GET /api/users?role=admin&search=ali&page=1&limit=2
+async function getAllUsers(req, res, next) {
+  try {
+    const { role, search, page = 1, limit } = req.query;
+
+    const filter = {};
+    if (role)   filter.role = role;
+    if (search) filter.name = new RegExp(search, "i");
+
+    // Pagination (active seulement si ?limit est fourni)
+    if (limit) {
+      const pageNum  = Math.max(1, parseInt(page));
+      const limitNum = Math.max(1, parseInt(limit));
+      const skip     = (pageNum - 1) * limitNum;
+      const totalCount = await User.countDocuments(filter);
+      const totalPages = Math.ceil(totalCount / limitNum);
+      const data = await User.find(filter).skip(skip).limit(limitNum);
+      return res.status(200).json({ success: true, page: pageNum, limit: limitNum, totalCount, totalPages, data });
+    }
+
+    const data = await User.find(filter);
+    res.status(200).json({ success: true, count: data.length, data });
+  } catch (err) {
+    next(err);
+  }
 }
 
-function getUserById(req, res) {
-  const user = UserModel.getById(parseInt(req.params.id));
-  if (!user) {
-    return res.status(404).json({ success: false, message: "Utilisateur non trouvé" });
+// GET /api/users/:id
+async function getUserById(req, res, next) {
+  try {
+    if (!mongoose.isValidObjectId(req.params.id)) {
+      return res.status(400).json({ success: false, message: "ID invalide" });
+    }
+    const user = await User.findById(req.params.id);
+    if (!user) {
+      return res.status(404).json({ success: false, message: "Utilisateur non trouvé" });
+    }
+    res.status(200).json({ success: true, data: user });
+  } catch (err) {
+    next(err);
   }
-  res.status(200).json({ success: true, data: user });
 }
 
-function createUser(req, res) {
-  const { name, email, role } = req.body;
-  if (!name || !email) {
-    return res.status(400).json({ success: false, message: "Les champs name et email sont obligatoires" });
+// POST /api/users
+async function createUser(req, res, next) {
+  try {
+    const { name, email, role } = req.body;
+    if (!name || !email) {
+      return res.status(400).json({ success: false, message: "Les champs name et email sont obligatoires" });
+    }
+    const user = await User.create({ name, email, role });
+    res.status(201).json({ success: true, data: user });
+  } catch (err) {
+    next(err);
   }
-  if (UserModel.isEmailTaken(email)) {
-    return res.status(409).json({ success: false, message: "Cet email est déjà utilisé" });
-  }
-  const newUser = UserModel.create({ name, email, role });
-  res.status(201).json({ success: true, data: newUser });
 }
 
-function updateUser(req, res) {
-  const id = parseInt(req.params.id);
-  if (!UserModel.getById(id)) {
-    return res.status(404).json({ success: false, message: "Utilisateur non trouvé" });
+// PUT /api/users/:id
+async function updateUser(req, res, next) {
+  try {
+    if (!mongoose.isValidObjectId(req.params.id)) {
+      return res.status(400).json({ success: false, message: "ID invalide" });
+    }
+    const { _id, createdAt, ...allowedUpdates } = req.body;
+    const user = await User.findByIdAndUpdate(req.params.id, allowedUpdates, { new: true, runValidators: true });
+    if (!user) {
+      return res.status(404).json({ success: false, message: "Utilisateur non trouvé" });
+    }
+    res.status(200).json({ success: true, data: user });
+  } catch (err) {
+    next(err);
   }
-  const { email } = req.body;
-  if (email && UserModel.isEmailTaken(email, id)) {
-    return res.status(409).json({ success: false, message: "Cet email est déjà utilisé" });
-  }
-  const updated = UserModel.update(id, req.body);
-  res.status(200).json({ success: true, data: updated });
 }
 
-function deleteUser(req, res) {
-  const deleted = UserModel.remove(parseInt(req.params.id));
-  if (!deleted) {
-    return res.status(404).json({ success: false, message: "Utilisateur non trouvé" });
+// DELETE /api/users/:id
+async function deleteUser(req, res, next) {
+  try {
+    if (!mongoose.isValidObjectId(req.params.id)) {
+      return res.status(400).json({ success: false, message: "ID invalide" });
+    }
+    const user = await User.findByIdAndDelete(req.params.id);
+    if (!user) {
+      return res.status(404).json({ success: false, message: "Utilisateur non trouvé" });
+    }
+    res.status(204).send();
+  } catch (err) {
+    next(err);
   }
-  res.status(204).send();
 }
 
 module.exports = { getAllUsers, getUserById, createUser, updateUser, deleteUser };

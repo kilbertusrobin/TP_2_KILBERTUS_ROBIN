@@ -1,0 +1,21 @@
+meta {
+  name: 13 - GET filtrer par role (admin)
+  type: http
+  seq: 13
+}
+
+get {
+  url: {{baseUrl}}/api/users?role=admin
+  body: none
+  auth: none
+}
+
+params:query {
+  role: admin
+}
+
+assert {
+  res.status: eq 200
+  res.body.success: eq true
+  res.body.count: eq 1
+}

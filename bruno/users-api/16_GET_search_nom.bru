@@ -1,0 +1,21 @@
+meta {
+  name: 16 - GET recherche par nom (?search=ali)
+  type: http
+  seq: 16
+}
+
+get {
+  url: {{baseUrl}}/api/users?search=ali
+  body: none
+  auth: none
+}
+
+params:query {
+  search: ali
+}
+
+assert {
+  res.status: eq 200
+  res.body.count: eq 1
+  res.body.data[0].name: eq Alice Martin
+}

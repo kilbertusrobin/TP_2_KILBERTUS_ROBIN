@@ -1,0 +1,22 @@
+meta {
+  name: 15 - GET pagination (page=2&limit=2)
+  type: http
+  seq: 15
+}
+
+get {
+  url: {{baseUrl}}/api/users?page=2&limit=2
+  body: none
+  auth: none
+}
+
+params:query {
+  page: 2
+  limit: 2
+}
+
+assert {
+  res.status: eq 200
+  res.body.page: eq 2
+  res.body.totalPages: eq 2
+}

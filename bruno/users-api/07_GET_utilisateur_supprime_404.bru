@@ -1,0 +1,17 @@
+meta {
+  name: 07 - GET utilisateur supprimé (404)
+  type: http
+  seq: 7
+}
+
+get {
+  url: {{baseUrl}}/api/users/{{newUserId}}
+  body: none
+  auth: none
+}
+
+assert {
+  res.status: eq 404
+  res.body.success: eq false
+  res.body.message: eq Utilisateur non trouvé
+}

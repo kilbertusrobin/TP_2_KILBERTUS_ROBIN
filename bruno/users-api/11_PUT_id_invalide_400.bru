@@ -1,0 +1,23 @@
+meta {
+  name: 11 - PUT id invalide (400)
+  type: http
+  seq: 11
+}
+
+put {
+  url: {{baseUrl}}/api/users/123
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "name": "Test"
+  }
+}
+
+assert {
+  res.status: eq 400
+  res.body.success: eq false
+  res.body.message: eq ID invalide
+}
